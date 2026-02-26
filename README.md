@@ -22,7 +22,7 @@ python examples/synthetic_shift.py
 ```
 Output figure is saved to:
 
-figures/drift_demo.png
+`figures/drift_demo.png`
 
 ## Project Structure
 
