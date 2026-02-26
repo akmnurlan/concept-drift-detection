@@ -24,7 +24,7 @@ Output figure is saved to:
 
 figures/drift_demo.png
 
-Project Structure
+## Project Structure
 src/
   stream.py                 # synthetic streaming generator
   detectors/ks_window.py    # rolling KS detector
@@ -35,7 +35,8 @@ tests/
   test_ks_detector.py       # basic correctness tests
 figures/
   drift_demo.png            # generated output
-Notes
+
+## Notes
 
 This is a univariate detector (one feature stream). For multivariate drift, you can run per-feature detection and aggregate.
 
