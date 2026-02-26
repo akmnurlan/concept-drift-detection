@@ -37,8 +37,6 @@ def plot_drift(
         ev_t = [e.t for e in events]
         ev_y = [x[e.t] for e in events]
         ax1.scatter(ev_t, ev_y, marker="x")
-        for et in ev_t:
-            ax1.axvline(et, linestyle="--", linewidth=1.0)
 
     # Bottom: p-values
     ax2 = plt.subplot(2, 1, 2)
