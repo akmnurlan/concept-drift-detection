@@ -22,6 +22,7 @@ def main() -> None:
         alpha=0.01,
         n_consecutive=3,
         min_updates=2,
+        cooldown=250,
     )
 
     detector.run(x)
