@@ -44,6 +44,15 @@ figures/
 ```
 That will render correctly on GitHub.
 
+## Output
+
+Below is an example drift detection run on synthetic data with:
+- stable distribution
+- sudden mean shift
+- gradual variance drift
+
+![Drift Demo](figures/drift_demo.png)
+
 ## Notes
 
 This is a univariate detector (one feature stream). For multivariate drift, you can run per-feature detection and aggregate.
