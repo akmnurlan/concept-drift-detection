@@ -85,7 +85,7 @@ Below is an example drift detection run on synthetic data with:
 - This implementation is intended as an interpretable baseline for studying streaming distribution shift and can be extended with alternative statistical tests (e.g., Cramér–von Mises, Anderson–Darling) or online drift detectors (e.g., ADWIN).
 ## Research Context
 
-Concept drift detection is critical in real-world ML systems where data evolves over time (e.g., cybersecurity, fraud detection, online monitoring).
-This repository provides a controlled and interpretable baseline for studying distributional shift in streaming environments.
+- Concept drift detection is critical in real-world ML systems where data evolves over time (e.g., cybersecurity, fraud detection, online monitoring).
+- This repository provides a controlled and interpretable baseline for studying distributional shift in streaming environments.
 ---
 
