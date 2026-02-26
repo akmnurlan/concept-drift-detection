@@ -44,7 +44,3 @@ The KS test is nonparametric and sensitive to distributional changes (mean/varia
 
 ---
 
-## `src/__init__.py`
-
-```python
-# Package marker
