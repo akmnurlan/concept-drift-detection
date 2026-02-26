@@ -16,12 +16,18 @@ class DriftEvent:
 
 class RollingKSDetector:
     """
-    Rolling-window drift detector using two-sample Kolmogorov–Smirnov test.
+    Rolling-window drift detector using the two-sample Kolmogorov–Smirnov test.
 
     Maintain a buffer of size (window_a + window_b). At each update when full:
-      A = first window_a samples (reference)
-      B = last  window_b samples (current)
-    Compute KS p-value. If p < alpha for n_consecutive checks => drift event.
+      A = first window_a samples (reference / older)
+      B = last  window_b samples (current / newer)
+
+    Run KS(A, B). If p < alpha for n_consecutive checks => drift alert.
+
+    Cooldown:
+      After an alert, the detector enters a cooldown period during which it still
+      computes p-values (for plotting) but does not emit new alerts. This avoids
+      repeated alerts during the same drift episode.
 
     Parameters
     ----------
@@ -35,6 +41,8 @@ class RollingKSDetector:
         Number of consecutive p-values below alpha required to trigger drift.
     min_updates: int
         Minimum number of full-window checks before allowing alerts (warm-up).
+    cooldown: int
+        Number of steps to wait after an alert before allowing another alert.
     """
 
     def __init__(
@@ -44,6 +52,7 @@ class RollingKSDetector:
         alpha: float = 0.01,
         n_consecutive: int = 3,
         min_updates: int = 1,
+        cooldown: int = 200,
     ) -> None:
         if window_a <= 0 or window_b <= 0:
             raise ValueError("window_a and window_b must be positive.")
@@ -53,17 +62,21 @@ class RollingKSDetector:
             raise ValueError("n_consecutive must be positive.")
         if min_updates <= 0:
             raise ValueError("min_updates must be positive.")
+        if cooldown < 0:
+            raise ValueError("cooldown must be >= 0.")
 
         self.window_a = int(window_a)
         self.window_b = int(window_b)
         self.alpha = float(alpha)
         self.n_consecutive = int(n_consecutive)
         self.min_updates = int(min_updates)
+        self.cooldown = int(cooldown)
 
         self._buffer: List[float] = []
-        self._t: int = -1  # time index of last update
+        self._t: int = -1
         self._checks_done: int = 0
         self._below_count: int = 0
+        self._cooldown_left: int = 0
 
         self.p_values: List[Optional[float]] = []
         self.statistics: List[Optional[float]] = []
@@ -78,13 +91,21 @@ class RollingKSDetector:
         self._t = -1
         self._checks_done = 0
         self._below_count = 0
+        self._cooldown_left = 0
         self.p_values.clear()
         self.statistics.clear()
         self.events.clear()
 
     def update(self, x: float) -> Tuple[bool, Optional[float]]:
         """
-        Add one observation. Returns (drift_detected, p_value_if_checked).
+        Add one observation.
+
+        Returns
+        -------
+        drift_detected : bool
+            True if a drift event is emitted at this time step.
+        p_value_if_checked : Optional[float]
+            KS p-value if a full window is available, else None.
         """
         self._t += 1
         self._buffer.append(float(x))
@@ -110,18 +131,24 @@ class RollingKSDetector:
         self.p_values[-1] = p
         self.statistics[-1] = stat
 
-        # count consecutive below alpha
+        # Update cooldown timer (still compute p-values while cooling down)
+        if self._cooldown_left > 0:
+            self._cooldown_left -= 1
+
+        # Track consecutive low p-values
         if p < self.alpha:
             self._below_count += 1
         else:
             self._below_count = 0
 
         drift = False
-        if self._checks_done >= self.min_updates and self._below_count >= self.n_consecutive:
+        can_alert = (self._checks_done >= self.min_updates) and (self._cooldown_left == 0)
+
+        if can_alert and (self._below_count >= self.n_consecutive):
             drift = True
             self.events.append(DriftEvent(t=self._t, p_value=p, statistic=stat))
-            # after firing, reset consecutive counter to avoid spamming
             self._below_count = 0
+            self._cooldown_left = self.cooldown
 
         return drift, p
 
