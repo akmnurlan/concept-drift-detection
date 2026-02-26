@@ -19,3 +19,32 @@ This is intentionally minimal, interpretable, and easy to extend.
 ```bash
 pip install -e .
 python examples/synthetic_shift.py
+```
+Output figure is saved to:
+
+figures/drift_demo.png
+
+Project Structure
+src/
+  stream.py                 # synthetic streaming generator
+  detectors/ks_window.py    # rolling KS detector
+  visualize.py              # plotting utilities
+examples/
+  synthetic_shift.py        # demo script
+tests/
+  test_ks_detector.py       # basic correctness tests
+figures/
+  drift_demo.png            # generated output
+Notes
+
+This is a univariate detector (one feature stream). For multivariate drift, you can run per-feature detection and aggregate.
+
+The KS test is nonparametric and sensitive to distributional changes (mean/variance/shape).
+
+
+---
+
+## `src/__init__.py`
+
+```python
+# Package marker
