@@ -25,16 +25,24 @@ Output figure is saved to:
 figures/drift_demo.png
 
 ## Project Structure
+
+```text
 src/
-  stream.py                 # synthetic streaming generator
-  detectors/ks_window.py    # rolling KS detector
-  visualize.py              # plotting utilities
+  stream.py                  # synthetic streaming generator
+  detectors/
+    ks_window.py             # rolling KS detector
+  visualize.py               # plotting utilities
+
 examples/
-  synthetic_shift.py        # demo script
+  synthetic_shift.py         # demo script
+
 tests/
-  test_ks_detector.py       # basic correctness tests
+  test_ks_detector.py        # basic correctness tests
+
 figures/
-  drift_demo.png            # generated output
+  drift_demo.png             # generated output
+```
+That will render correctly on GitHub.
 
 ## Notes
 
